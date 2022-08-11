@@ -1,25 +1,29 @@
-from typing import List
 from fastapi import FastAPI
-from models import User, Gender, Role
+from fastapi.staticfiles import StaticFiles
+import os
 
 app = FastAPI()
 
-db: List[User] = [
-    User(
-        first_name="Bryan",
-        last_name="Gruhn",
-        gender=Gender.male,
-        roles=[Role.student]
-    ),
-    User(
-        first_name="Ashley",
-        last_name="Mathews",
-        gender=Gender.female,
-        roles=[Role.admin]
-    )
-]
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.get("/api/v1/users")
-async def fetch_users():
-    return {"first_name": User.first_name}
+@app.get("/csv")
+def images():
+    out = []
+    for filename in os.listdir("static/csv"):
+        out.append({
+            "name": filename.split(".")[0],
+            "path": "/static/csv/" + filename
+        })
+    return out
+
+
+@app.get("/xml")
+def xml():
+    out = []
+    for filename in os.listdir("static/xml"):
+        out.append({
+            "name": filename.split(".")[0],
+            "path": "/static/xml/" + filename
+        })
+    return out
